@@ -1,0 +1,18 @@
+CreateRole({
+  name: "guest",
+  membership: [],
+  privileges: [
+    {
+      resource: Function("GetOrCreateFaunaUser"),
+      actions: {
+        call: true
+      }
+    },
+    {
+      resource: Function("CreateFaunaToken"),
+      actions: {
+        call: true
+      }
+    }
+  ]
+})

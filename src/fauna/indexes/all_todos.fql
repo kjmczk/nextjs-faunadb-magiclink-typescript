@@ -1,0 +1,4 @@
+CreateIndex({
+  name: "all_todos",
+  source: Collection("Todos")
+})

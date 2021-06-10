@@ -1,0 +1,10 @@
+CreateFunction({
+  name: "CreateFaunaToken",
+  body: Query(
+    Lambda(
+      "userDoc",
+      Create(Tokens(), { instance: Select("ref", Var("userDoc")) })
+    )
+  ),
+  role: "server"
+})

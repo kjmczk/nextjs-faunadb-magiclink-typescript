@@ -1,0 +1,53 @@
+CreateRole({
+  name: "user",
+  membership: [{ resource: Collection("Users") }],
+  privileges: [
+    {
+      resource: Collection("Todos"),
+      actions: {
+        read: Query(
+          Lambda(
+            "ref",
+            Equals(Identity(), Select(["data", "owner"], Get(Var("ref"))))
+          )
+        ),
+        write: Query(
+          Lambda(
+            ["oldData", "newData"],
+            And(
+              Equals(Identity(), Select(["data", "owner"], Var("oldData"))),
+              Equals(
+                Select(["data", "owner"], Var("oldData")),
+                Select(["data", "owner"], Var("newData"))
+              )
+            )
+          )
+        ),
+        create: Query(
+          Lambda(
+            "values",
+            Equals(Identity(), Select(["data", "owner"], Var("values")))
+          )
+        ),
+        delete: Query(
+          Lambda(
+            "ref",
+            Equals(Identity(), Select(["data", "owner"], Get(Var("ref"))))
+          )
+        )
+      }
+    },
+    {
+      resource: Collection("Users"),
+      actions: {
+        read: true
+      }
+    },
+    {
+      resource: Index("all_todos"),
+      actions: {
+        read: true
+      }
+    }
+  ]
+})

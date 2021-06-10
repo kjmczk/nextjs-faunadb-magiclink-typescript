@@ -1,0 +1,14 @@
+CreateFunction({
+  name: "GetOrCreateFaunaUser",
+  body: Query(
+    Lambda(
+      "email",
+      If(
+        Exists(Match(Index("user_by_email"), Var("email"))),
+        Get(Match(Index("user_by_email"), Var("email"))),
+        Create(Collection("Users"), { data: { email: Var("email") } })
+      )
+    )
+  ),
+  role: "server"
+})

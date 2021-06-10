@@ -1,0 +1,6 @@
+CreateKey({
+  data: {
+    name: "Guest key for login"
+  },
+  role: Role("guest")
+})
