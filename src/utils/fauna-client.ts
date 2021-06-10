@@ -1,7 +1,7 @@
 import faunadb, { Client } from 'faunadb';
 
-export const authClient = new faunadb.Client({
-  secret: process.env.FAUNA_AUTH_SECRET!,
+export const guestClient = new faunadb.Client({
+  secret: process.env.FAUNA_GUEST_SECRET!,
 });
 
 export const userClient = (secret: string): Client =>
