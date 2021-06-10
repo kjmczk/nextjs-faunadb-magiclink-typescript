@@ -1,25 +1,13 @@
 import { query as q } from 'faunadb';
-import { authClient, userClient } from './fauna-client';
+import { guestClient, userClient } from './fauna-client';
 import { UserDoc, FaunaToken, Todos, TodoDoc } from '../types';
 
-export async function getUserByEmail(
-  email: string
-): Promise<UserDoc | undefined> {
-  return authClient
-    .query(q.Get(q.Match(q.Index('user_by_email'), email)))
-    .catch(() => undefined);
-}
-
-export async function createUser(email: string): Promise<UserDoc> {
-  return authClient.query(
-    q.Create(q.Collection('User'), {
-      data: { email },
-    })
-  );
+export async function getOrCreateFaunaUser(email: string): Promise<UserDoc> {
+  return guestClient.query(q.Call(Function('GetOrCreateFaunaUser'), email));
 }
 
 export async function createFaunaToken(userDoc: UserDoc): Promise<FaunaToken> {
-  return authClient.query(q.Create(q.Tokens(), { instance: userDoc.ref }));
+  return guestClient.query(q.Call(Function('CreateFaunaToken'), userDoc));
 }
 
 export async function deleteFaunaToken(secret: string): Promise<void> {
@@ -38,7 +26,7 @@ export async function createTodo(
 ): Promise<TodoDoc> {
   const owner = q.CurrentIdentity();
   return userClient(secret).query(
-    q.Create(q.Collection('Todo'), {
+    q.Create(q.Collection('Todos'), {
       data: {
         title,
         completed: false,
@@ -55,7 +43,7 @@ export async function updateTodo(
   completed: boolean
 ): Promise<TodoDoc> {
   return userClient(secret).query(
-    q.Update(q.Ref(q.Collection('Todo'), id), {
+    q.Update(q.Ref(q.Collection('Todos'), id), {
       data: {
         title,
         completed,
@@ -68,5 +56,5 @@ export async function deleteTodo(
   secret: string,
   id: string | string[]
 ): Promise<TodoDoc> {
-  return userClient(secret).query(q.Delete(q.Ref(q.Collection('Todo'), id)));
+  return userClient(secret).query(q.Delete(q.Ref(q.Collection('Todos'), id)));
 }
