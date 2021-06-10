@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { magic } from '../../utils/magic';
 import { setSession } from '../../utils/auth-cookies';
-import { getUserByEmail, createUser, createFaunaToken } from '../../utils/fql';
+import { getOrCreateFaunaUser, createFaunaToken } from '../../utils/fql';
 
 export default async function login(
   req: NextApiRequest,
@@ -20,9 +20,7 @@ export default async function login(
 
     // If the email address does not exist in your database,
     // create a new user document
-    const userDoc =
-      (await getUserByEmail(userInfo.email)) ??
-      (await createUser(userInfo.email));
+    const userDoc = await getOrCreateFaunaUser(userInfo.email);
 
     const faunaToken = await createFaunaToken(userDoc);
 
